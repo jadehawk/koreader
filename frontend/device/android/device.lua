@@ -11,6 +11,7 @@ local logger = require("logger")
 local util = require("util")
 local _ = require("gettext")
 local T = FFIUtil.template
+local quirks = require("device.quirks")
 
 local function yes() return true end
 local function no() return false end
@@ -244,10 +245,9 @@ function Device:init()
     }
 
     -- disable translation for specific models, where media keys follow gravity, see https://github.com/koreader/koreader/issues/12423
-    if android.prop.model == "go7" or android.prop.model == "gocolor7" or android.prop.model == "moaanmix7" or android.prop.model == "xiaomi_reader" then
+    if quirks:has(android.prop.model, "disable_rotation_map") then
         self.input:disableRotationMap()
     end
-
     -- check if we have a keyboard
     if android.lib.AConfiguration_getKeyboard(android.app.config)
        == C.ACONFIGURATION_KEYBOARD_QWERTY
